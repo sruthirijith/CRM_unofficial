@@ -5,6 +5,7 @@ from core.database.connection import get_db, engine,Base
 from core.jwt import auth_handler
 from core.jwt.auth_bearer import JWTBearer
 from core.api.sales_person import crud,schema, models
+from core.api.merchant import models
 
 
 Base.metadata.create_all(bind=engine)
@@ -165,7 +166,7 @@ def logout(token = Depends(JWTBearer()), db : Session=Depends(get_db)):
 
 
 
-"""start active login"""
+"""api for start time tracking"""
 @app.post('/start', dependencies=[Depends(JWTBearer())], tags = ["Sales Person"])
 async def start(token = Depends(JWTBearer()), db : Session=Depends(get_db)):
     email = auth_handler.decode_token(token=token)
@@ -186,7 +187,8 @@ async def start(token = Depends(JWTBearer()), db : Session=Depends(get_db)):
                         }
                     }
                 } 
-            
+
+"""api for end time tracking"""            
 @app.post('/stop', dependencies=[Depends(JWTBearer())], tags = ["Sales Person"])   
 async def stop(token = Depends(JWTBearer()), db : Session=Depends(get_db)): 
     email = auth_handler.decode_token(token=token)

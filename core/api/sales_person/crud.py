@@ -7,17 +7,17 @@ from core.api.sales_person import models, schema
 
 
 def check_email(db:Session, email:str):
-    return db.query(models.Users).filter(models.Users.email==email).first()
+    return db.query(models.BDE).filter(models.BDE.email==email).first()
 
 def check_phone(db:Session, phone_number:int):
-    return db.query(models.Users).filter(models.Users.phone_number==phone_number).first()
+    return db.query(models.BDE).filter(models.BDE.phone_number==phone_number).first()
 
 
 def verify_email_password(db:Session , email:str ,password:str):
-    return db.query(models.Users).filter(models.Users.email==email, models.Users.password==password).first()
+    return db.query(models.BDE).filter(models.BDE.email==email, models.BDE.password==password).first()
 
 def create_user(db:Session, data:schema.registration):
-    db_user = models.Users(
+    db_user = models.BDE(
             full_name = data.full_name,
             email     = data.email, 
             password  = data.password,  
@@ -54,13 +54,13 @@ def validate_password(password: str) -> bool:
     return True if re.match(password_pattern, password) else False
 
 def get_user_by_email(db: Session, email: str):
-    return db.query(models.Users).filter(models.Users.email == email).first()
+    return db.query(models.BDE).filter(models.BDE.email == email).first()
 
 def track_login(db:Session, users_id:int):
     db_login=models.track_time(
     users_id         = users_id,
     date            =date.today(),
-    login_time       = datetime.now(),
+    login_time = datetime.now() - timedelta(hours=0, minutes=30),
     active           =True
     )
     db.add(db_login)
@@ -71,20 +71,22 @@ def track_login(db:Session, users_id:int):
 
 def get_duration(db:Session, users_id:int):
     get_id = db.query(models.track_time).filter(models.track_time.users_id==users_id).first()
-    login_time = get_id.__dict__['login_time'] - timedelta(hours=0, minutes=30)
-    # login_time_by_2 = login_time + timedelta(hours=2, minutes=1)
-    logout_time = datetime.now()
-
-    # if login_time >= login_time_by_2 :
-    #     logout_time =  datetime.now()
-    # logout_time = datetime.now()
-    # db.query(models.track_time).filter(models.track_time.users_id==users_id).update({"logout_time":logout_time})
-    # db.commit()
+    login_time = get_id.__dict__['login_time'] 
+    temp_logout_time = datetime.now()
+    active_period = temp_logout_time - login_time
     
-    active_period = logout_time - login_time
-    db.query(models.track_time).filter(models.track_time.users_id==users_id).update({"active_period":active_period})
-    db.commit()
-    return True
+    a = timedelta(hours=2)
+    if active_period > a :
+        logout_time =temp_logout_time
+    else:
+        hour =temp_logout_time.hour
+        if hour >= 18 :
+            logout_time_final = temp_logout_time + timedelta(hours=2, minutes=0)
+            active_period_final = logout_time_final - login_time
+            db.query(models.track_time).filter(models.track_time.users_id==users_id).update({"active_period":active_period_final, "logout_time":logout_time_final})
+            db.commit()
+            return True 
+        
     
-   
+    
 
