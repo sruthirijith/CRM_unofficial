@@ -78,6 +78,7 @@ def get_duration(db:Session, users_id:int):
     a = timedelta(hours=2)
     if active_period > a :
         logout_time =temp_logout_time
+        db.query(models.track_time).filter(models.track_time.users_id==users_id).update({"logout_time":logout_time})
     else:
         hour =temp_logout_time.hour
         if hour >= 18 :
