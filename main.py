@@ -190,13 +190,14 @@ async def start(token = Depends(JWTBearer()), db : Session=Depends(get_db)):
 
 """api for end time tracking"""            
 @app.post('/stop', dependencies=[Depends(JWTBearer())], tags = ["Sales Person"])   
-async def stop(token = Depends(JWTBearer()), db : Session=Depends(get_db)): 
+async def stop(hours:int, minutes:int,token = Depends(JWTBearer()), db : Session=Depends(get_db)): 
     email = auth_handler.decode_token(token=token)
     userdata = crud.get_user_by_email(db=db, email=email['sub'])
     users_id= userdata.__dict__['id']
-    user_email= userdata.__dict__['email']
+    # user_email= userdata.__dict__['email']
     if userdata:
-        active_period= crud.get_duration(db=db, users_id=users_id)
+        active_period= crud.get_duration(db=db, users_id=users_id, hours=hours, minutes=minutes)
+        
         if active_period:
             return {
                     "detail": {

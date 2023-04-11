@@ -69,24 +69,25 @@ def track_login(db:Session, users_id:int):
 
 
 
-def get_duration(db:Session, users_id:int):
+def get_duration(db:Session, users_id:int, hours:int, minutes:int):
     get_id = db.query(models.track_time).filter(models.track_time.users_id==users_id).first()
     login_time = get_id.__dict__['login_time'] 
     temp_logout_time = datetime.now()
-    active_period = temp_logout_time - login_time
+    active_period_temp = temp_logout_time - login_time
     
-    a = timedelta(hours=2)
-    if active_period > a :
+    a = timedelta(hours=hours, minutes=minutes)
+    if active_period_temp > a :
         logout_time =temp_logout_time
         db.query(models.track_time).filter(models.track_time.users_id==users_id).update({"logout_time":logout_time})
-    else:
-        hour =temp_logout_time.hour
-        if hour >= 18 :
-            logout_time_final = temp_logout_time + timedelta(hours=2, minutes=0)
-            active_period_final = logout_time_final - login_time
-            db.query(models.track_time).filter(models.track_time.users_id==users_id).update({"active_period":active_period_final, "logout_time":logout_time_final})
-            db.commit()
-            return True 
+       
+    hour =temp_logout_time.hour
+    if hour >= 18 :
+        logout_time_final = temp_logout_time + timedelta(hours=2, minutes=0)
+        active_period_final = logout_time_final - login_time
+        active_period = active_period_final - timedelta(hours=1)
+        db.query(models.track_time).filter(models.track_time.users_id==users_id).update({"active_period":active_period, "logout_time":logout_time_final})
+        db.commit()
+        return True 
         
     
     
