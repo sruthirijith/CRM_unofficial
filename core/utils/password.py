@@ -1,4 +1,6 @@
 import re
+import random
+import array
 
 from passlib.context import CryptContext
 from config.base import settings
@@ -29,6 +31,46 @@ def validate_password(password: str) -> bool:
     password_pattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
     return True if re.match(password_pattern, password) else False
 
+
+def create_new_password():
+    
+    max_len = 10
+
+    digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+    upper_char = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                        'I', 'J', 'K', 'M', 'N', 'O', 'P', 'Q',
+                        'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+                        'Z']
+
+    lower_char = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+                        'i', 'j', 'k', 'm', 'n', 'o', 'p', 'q',
+                        'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
+                        'z']
+
+    symbols = ['@', '#', '$', '%', '=', ':', '?', '.', '/', '|', '~', '>',
+            '*', '(', ')', '<']
+
+    combined_list = digits + upper_char + lower_char + symbols
+
+    rand_digit = random.choice(digits)
+    rand_upper = random.choice(upper_char)
+    rand_lower = random.choice(lower_char)
+    rand_symbol = random.choice(symbols)
+
+    temp_pass = rand_digit + rand_upper + rand_lower + rand_symbol
+
+    for x in range(max_len - 4):
+        temp_pass = temp_pass + random.choice(combined_list)
+
+        temp_pass_list = array.array('u', temp_pass)
+        random.shuffle(temp_pass_list)
+        
+    password = ""
+    for x in temp_pass_list:
+            password = password + x
+
+    return password
 
 
 # print(get_hashed_password("C@le6ale"))

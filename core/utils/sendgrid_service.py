@@ -6,7 +6,7 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 from config.base import settings
-from core.utils.html_formatter import create_otp_template
+from core.utils.otp_and_password_html import create_otp_template
 
 sendgrid_key = settings.SENDGRID_API_KEY
 

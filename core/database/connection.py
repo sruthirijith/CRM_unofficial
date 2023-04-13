@@ -1,7 +1,7 @@
-import sqlalchemy
-
 from functools import lru_cache
 from pymongo import MongoClient
+
+import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -10,9 +10,11 @@ from config.base import settings
 
 metadata = sqlalchemy.MetaData()
 
+
 @lru_cache()
 def get_settings():
     return settings()
+
 
 
 engine = create_engine(settings.DB_URL)
@@ -22,6 +24,7 @@ metadata.create_all(engine)
 session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
 
 def get_db():
     db = session_local()

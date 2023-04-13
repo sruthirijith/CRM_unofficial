@@ -2,7 +2,7 @@ import datetime
 
 from datetime import datetime, timedelta
 from fastapi import HTTPException
-from jose import JWTError, jwt
+from jose import jwt,JWTError
 from typing import Dict
 
 from config.base import settings
@@ -34,19 +34,7 @@ def decode_token(token):
         payload = jwt.decode(token, secret, algorithm)
         return payload
     except JWTError as e:
-        raise HTTPException(
-            status_code=401,
-            detail = {
-                "status": "Error",
-                "status_code": 401,
-                "data": None,
-                "error": {
-                    "status_code": 401,
-                    "status": "Error",
-                    "message": str(e)
-                }
-            }
-        )
+        raise HTTPException(status_code=401, detail=str(e))
 
 def refresh_token(user_id):
     payload = {
@@ -70,32 +58,8 @@ def refresh_access_token(refresh_token):
             new_token = encode_token(user_id=user_id)
             return token_response(new_token)
 
-        raise HTTPException(
-            status_code=401,
-            detail = {
-                "status": "Error",
-                "status_code": 401,
-                "data": None,
-                "error": {
-                    "status_code": 401,
-                    "status": "Error",
-                    "message": "Invalid scope for token"
-                }
-            }
-        )
+        raise HTTPException(status_code=401, detail='Invalid scope for token')
 
     except JWTError as e:
-        raise HTTPException(
-            status_code=401,
-            detail = {
-                "status": "Error",
-                "status_code": 401,
-                "data": None,
-                "error": {
-                    "status_code": 401,
-                    "status": "Error",
-                    "message": str(e)
-                }
-            }
-        )
+        raise HTTPException(status_code=401, detail=str(e))
 

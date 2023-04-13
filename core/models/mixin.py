@@ -17,9 +17,11 @@ class GenderType(enum.IntEnum):
     FEMALE = 1
     MALE = 2
     OTHER = 3
+    NOTSPECIFIED = 4
 
 
 class DeviceType(enum.IntEnum):
 
     ANDROID = 1
     IOS = 2
+    NOTSPECIFIED = 3
